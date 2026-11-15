@@ -1,0 +1,36 @@
+name: Build, deploy and verify
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+  workflow_dispatch:
+permissions: { contents: read }
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.4.0
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:ci
+      - run: npx ng build --configuration production --base-href /portafolio/
+      - run: cp dist/portafolio/browser/index.html dist/portafolio/browser/404.html
+      - uses: actions/upload-pages-artifact@v3.0.1
+        with: { path: dist/portafolio/browser }
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions: { contents: read, pages: write, id-token: write }
+    environment: { name: github-pages, url: ${{ steps.deployment.outputs.page_url }} }
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4.0.5
+  verify-deployment:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 10 && curl --fail --retry 5 --retry-delay 10 --silent --show-error https://andresperea01.github.io/portafolio/ | grep -q 'Andres Perea'

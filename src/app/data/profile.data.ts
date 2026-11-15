@@ -1,0 +1,2 @@
+import { Profile } from './models';
+export const PROFILE: Profile = { name: 'Andres David Perea Herrera', role: 'Ingeniero de software en formación', bio: 'Desarrollo soluciones web mantenibles y automatizadas, combinando pensamiento arquitectónico, experiencia de usuario y prácticas CI/CD.', skills: ['Arquitectura de software','Desarrollo frontend','Automatización CI/CD','Trabajo colaborativo'], technologies: ['JavaScript','TypeScript','Python','Angular','Git','GitHub Actions'], email: 'andres.perea01@ueva.edu.co' };
