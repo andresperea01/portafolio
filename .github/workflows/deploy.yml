@@ -14,6 +14,9 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm run lint
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
       - run: npm run test:ci
       - run: npx ng build --configuration production --base-href /portafolio/
       - run: cp dist/portafolio/browser/index.html dist/portafolio/browser/404.html
